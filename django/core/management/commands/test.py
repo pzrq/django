@@ -87,7 +87,7 @@ class Command(BaseCommand):
             del options['liveserver']
 
         test_runner = TestRunner(**options)
-        failures = test_runner.run_tests(test_labels)
+        failures = test_runner.run_tests(test_labels, command=self)
 
         if failures:
             sys.exit(bool(failures))

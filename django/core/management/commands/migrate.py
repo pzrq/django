@@ -15,7 +15,7 @@ from django.core.management.sql import (
 from django.db import DEFAULT_DB_ALIAS, connections, router, transaction
 from django.db.migrations.executor import MigrationExecutor
 from django.db.migrations.loader import AmbiguityError
-from django.db.migrations.utils import has_unmigrated_models
+from django.db.migrations.utils import check_unmigrated_models
 from django.utils.deprecation import RemovedInDjango110Warning
 from django.utils.module_loading import module_has_submodule
 
@@ -172,16 +172,7 @@ class Command(BaseCommand):
         if not plan:
             if self.verbosity >= 1:
                 self.stdout.write("  No migrations to apply.")
-                if has_unmigrated_models(loader=executor.loader):
-                    self.stdout.write(self.style.NOTICE(
-                        "  Your models have changes that are not yet reflected "
-                        "in a migration, and so won't be applied."
-                    ))
-                    self.stdout.write(self.style.NOTICE(
-                        "  Run 'manage.py makemigrations' to make new "
-                        "migrations, and then re-run 'manage.py migrate' to "
-                        "apply them."
-                    ))
+                check_unmigrated_models(loader=executor.loader, command=self)
         else:
             fake = options.get("fake")
             fake_initial = options.get("fake_initial")
