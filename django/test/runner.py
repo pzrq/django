@@ -6,7 +6,7 @@ from unittest import TestSuite, defaultTestLoader
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.db.migrations.utils import has_unmigrated_models
+from django.db.migrations.utils import check_unmigrated_models
 from django.test import SimpleTestCase, TestCase
 from django.test.utils import setup_test_environment, teardown_test_environment
 from django.utils.datastructures import OrderedSet
@@ -173,13 +173,7 @@ class DiscoverRunner(object):
         This hook exists as downstream test runners might choose to override
         the implementation for performance reasons (migrations are slow).
         """
-        if has_unmigrated_models():
-            self.migration_notices.extend([
-                "  Your models have changes that are not yet reflected "
-                "in a migration.",
-                "  Run 'manage.py makemigrations' to make new "
-                "migrations, and then re-run 'manage.py test'",
-            ])
+        self.migration_notices.extend(check_unmigrated_models())
 
     def get_resultclass(self):
         return DebugSQLTextTestResult if self.debug_sql else None
