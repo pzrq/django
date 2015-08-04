@@ -12,5 +12,8 @@ def has_unmigrated_models(loader=None, connection=None):
     if loader is None:
         loader = MigrationLoader(connection)
 
-    autodetector = MigrationAutodetector(loader.project_state(), ProjectState.from_apps(apps))
+    autodetector = MigrationAutodetector(
+        loader.project_state(),
+        ProjectState.from_apps(apps),
+    )
     return bool(autodetector.changes(graph=loader.graph))
