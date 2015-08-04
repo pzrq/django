@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.core.management.base import BaseCommand
 from django.db.migrations.autodetector import MigrationAutodetector
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.state import ProjectState
@@ -39,7 +40,7 @@ def check_unmigrated_models(loader=None, connection=None, command=None):
             "migrations, and then re-run 'manage.py migrate' to "
             "apply them."
         )
-        if hasattr(command, 'stdout') and hasattr(command, 'style'):
+        if isinstance(command, BaseCommand):
             command.stdout.write(command.style.NOTICE(message1))
             command.stdout.write(command.style.NOTICE(message2))
         else:
