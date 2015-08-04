@@ -216,8 +216,8 @@ class DiscoverRunner(object):
         """
         self.setup_test_environment()
         suite = self.build_suite(test_labels, extra_tests)
-        old_config = self.setup_databases()
         self.verify_migrations()
+        old_config = self.setup_databases()
         result = self.run_suite(suite)
         self.teardown_databases(old_config)
         self.teardown_test_environment()

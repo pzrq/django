@@ -11,6 +11,7 @@ from django import db
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
+from django.db.utils import OperationalError
 from django.test import (
     TestCase, TransactionTestCase, mock, skipUnlessDBFeature, testcases,
 )
@@ -156,6 +157,7 @@ class MigrateVerifyRunner(DiscoverRunner):
 
     def run_tests(self, test_labels, extra_tests=None, **kwargs):
         self.verify_migrations()
+        raise OperationalError('no such table: ponies_pony')
 
     def verify_migrations(self):
         self.migration_notices.extend([
@@ -166,11 +168,16 @@ class MigrateVerifyRunner(DiscoverRunner):
 
 class UnmigratedTest(unittest.TestCase):
     def test_unmigrated_tests(self):
+        expect0 = 'no such table: ponies_pony'
         expect1 = 'A pony notice'
         expect2 = 'A unicorn notice'
-        with captured_stdout() as stdout:
-            call_command('test', 'sites',
-                         testrunner='test_runner.tests.MigrateVerifyRunner')
+        with self.assertRaises(OperationalError) as cm:
+            with captured_stdout() as stdout:
+                call_command(
+                    'test', 'sites',
+                    testrunner='test_runner.tests.MigrateVerifyRunner',
+                )
+        self.assertEqual(expect0, six.text_type(cm.exception))
         self.assertIn(expect1, stdout.getvalue())
         self.assertIn(expect2, stdout.getvalue())
 
