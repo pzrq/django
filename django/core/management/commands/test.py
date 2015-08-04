@@ -81,17 +81,9 @@ class Command(BaseCommand):
         from django.conf import settings
         from django.test.utils import get_runner
 
-        if has_unmigrated_models():
-            self.stdout.write(self.style.NOTICE(
-                "  Your models have changes that are not yet reflected "
-                "in a migration."
-            ))
-            self.stdout.write(self.style.NOTICE(
-                "  Run 'manage.py makemigrations' to make new "
-                "migrations, and then re-run 'manage.py test'"
-            ))
-
-            return
+        messages = has_unmigrated_models()
+        for notice in messages:
+            self.stdout.write(self.style.NOTICE(notice))
 
         TestRunner = get_runner(settings, options.get('testrunner'))
 

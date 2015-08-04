@@ -177,16 +177,9 @@ class Command(BaseCommand):
             executor.check_replacements()
             if self.verbosity >= 1:
                 self.stdout.write("  No migrations to apply.")
-                if has_unmigrated_models(loader=executor.loader):
-                    self.stdout.write(self.style.NOTICE(
-                        "  Your models have changes that are not yet reflected "
-                        "in a migration, and so won't be applied."
-                    ))
-                    self.stdout.write(self.style.NOTICE(
-                        "  Run 'manage.py makemigrations' to make new "
-                        "migrations, and then re-run 'manage.py migrate' to "
-                        "apply them."
-                    ))
+                messages = has_unmigrated_models(loader=executor.loader)
+                for notice in messages:
+                    self.stdout.write(self.style.NOTICE(notice))
         else:
             fake = options.get("fake")
             fake_initial = options.get("fake_initial")
