@@ -76,6 +76,7 @@ class DiscoverRunner(object):
         self.keepdb = keepdb
         self.reverse = reverse
         self.debug_sql = debug_sql
+        self.migration_notices = []
 
     @classmethod
     def add_arguments(cls, parser):
@@ -173,17 +174,12 @@ class DiscoverRunner(object):
         the implementation for performance reasons (migrations are slow).
         """
         if has_unmigrated_models():
-            # TODO: Restore red NOTICE style printing
-            # command.stdout.write(command.style.NOTICE(
-            print((
+            self.migration_notices.extend([
                 "  Your models have changes that are not yet reflected "
-                "in a migration."
-            ))
-            # command.stdout.write(command.style.NOTICE(
-            print((
+                "in a migration.",
                 "  Run 'manage.py makemigrations' to make new "
-                "migrations, and then re-run 'manage.py test'"
-            ))
+                "migrations, and then re-run 'manage.py test'",
+            ])
 
     def get_resultclass(self):
         return DebugSQLTextTestResult if self.debug_sql else None
