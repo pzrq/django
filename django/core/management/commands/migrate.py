@@ -177,7 +177,6 @@ class Command(BaseCommand):
             executor.check_replacements()
             if self.verbosity >= 1:
                 self.stdout.write("  No migrations to apply.")
-                # If there's changes that aren't in migrations yet, tell them how to fix it.
                 if has_unmigrated_models(loader=executor.loader):
                     self.stdout.write(self.style.NOTICE(
                         "  Your models have changes that are not yet reflected "
