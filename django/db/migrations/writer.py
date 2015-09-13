@@ -15,7 +15,7 @@ from django.apps import apps
 from django.db import migrations, models
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.operations.base import Operation
-from django.db.migrations.utils import COMPILED_REGEX_TYPE, RegexObject
+from django.db.migrations.regex_utils import COMPILED_REGEX_TYPE, RegexObject
 from django.utils import datetime_safe, six
 from django.utils._os import upath
 from django.utils.encoding import force_text

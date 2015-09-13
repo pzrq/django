@@ -11,7 +11,7 @@ from django.db.migrations.migration import Migration
 from django.db.migrations.operations.models import AlterModelOptions
 from django.db.migrations.optimizer import MigrationOptimizer
 from django.db.migrations.questioner import MigrationQuestioner
-from django.db.migrations.utils import COMPILED_REGEX_TYPE, RegexObject
+from django.db.migrations.regex_utils import COMPILED_REGEX_TYPE, RegexObject
 from django.utils import six
 
 from .topological_sort import stable_topological_sort
