@@ -16,6 +16,7 @@ from django.test import (
 )
 from django.test.runner import DiscoverRunner, dependency_ordered
 from django.test.testcases import connections_support_transactions
+from django.test.utils import captured_stdout
 from django.utils import six
 from django.utils.encoding import force_text
 
@@ -140,15 +141,33 @@ MockTestRunner.run_tests = mock.Mock(return_value=[])
 
 class ManageCommandTests(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super(ManageCommandTests, cls).setUpClass()
+        cls.expect1 = (
+            "Your models have changes that are not yet reflected "
+            "in a migration, and so won't be applied."
+        )
+        cls.expect2 = (
+            "Run 'manage.py makemigrations' to make new migrations, "
+            "and then re-run 'manage.py migrate' to apply them."
+        )
+
     def test_custom_test_runner(self):
-        call_command('test', 'sites',
-                     testrunner='test_runner.tests.MockTestRunner')
-        MockTestRunner.run_tests.assert_called_with(('sites',))
+        with captured_stdout() as stdout:
+            call_command('test', 'sites',
+                         testrunner='test_runner.tests.MockTestRunner')
+            MockTestRunner.run_tests.assert_called_with(('sites',))
+        self.assertIn(self.expect1, stdout.getvalue())
+        self.assertIn(self.expect2, stdout.getvalue())
 
     def test_bad_test_runner(self):
-        with self.assertRaises(AttributeError):
-            call_command('test', 'sites',
-                testrunner='test_runner.NonExistentRunner')
+        with captured_stdout() as stdout:
+            with self.assertRaises(AttributeError):
+                call_command('test', 'sites',
+                             testrunner='test_runner.NonExistentRunner')
+        self.assertIn(self.expect1, stdout.getvalue())
+        self.assertIn(self.expect2, stdout.getvalue())
 
 
 class CustomTestRunnerOptionsTests(AdminScriptTestCase):
